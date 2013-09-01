@@ -24,7 +24,7 @@ __declspec(dllexport) int dgemm(char TRANSA, char TRANSB, int M, int N, int K, d
 	int i, j, k, index;
 	short NOTA, NOTB;	/* NO Trans A/B */
 	int NROWA, NCOLA;
-	int NROWB;
+	int NROWB, NCOLB;
 	double temp;
 	 
 	if( TRANSA == 'T' || TRANSA == 't' )
@@ -44,8 +44,11 @@ __declspec(dllexport) int dgemm(char TRANSA, char TRANSB, int M, int N, int K, d
 	if( NOTA ) { NROWA = M; NCOLA = K; }
 		else { NROWA = K; NCOLA = M; }
 		
-	if( NOTB ) { NROWB = K; }
-		else { NROWB = N; }
+	if( NOTB ) { NROWB = K; NCOLB = N; }
+		else { NROWB = N; NCOLB = K; }
+		
+	if( LDA < NCOLA || LDB < NCOLB )
+		return -1;
 	
 	/* Quick return without any calculation. */
 	if( M == 0 || N == 0 || ( (ALPHA == 0.0 || K == 0) && (BETA == 1.0) ) )
